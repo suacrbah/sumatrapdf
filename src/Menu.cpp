@@ -226,14 +226,14 @@ static MenuDef menuDefView[] = {
         _TRN("&Book View"),
         CmdBookView,
     },
+    // TODO: "&Inverse Reading Direction" (since some Mangas might be read left-to-right)?
+    {
+        _TRN("Right to Left"),
+        CmdToggleMangaMode,
+    },
     {
         _TRN("Show &Pages Continuously"),
         CmdToggleContinuousView,
-    },
-    // TODO: "&Inverse Reading Direction" (since some Mangas might be read left-to-right)?
-    {
-        _TRN("Man&ga Mode"),
-        CmdToggleMangaMode,
     },
     {
         kMenuSeparator,
@@ -1292,7 +1292,6 @@ HMENU BuildMenuFromMenuDef(MenuDef* menuDef, HMENU menu, BuildMenuCtx* ctx) {
 
         if (ctx) {
             removeMenu |= (ctx->tab && ctx->tab->AsChm() && cmdIdInList(removeIfChm));
-            removeMenu |= (!ctx->isCbx && (cmdId == CmdToggleMangaMode));
             removeMenu |= (!ctx->supportsAnnotations && cmdIdInList(removeIfAnnotsNotSupported));
             removeMenu |= !ctx->canSendEmail && (cmdId == CmdSendByEmail);
 
@@ -1495,11 +1494,7 @@ void MenuUpdateDisplayMode(MainWindow* win) {
 
     CheckMenuRadioItem(win->menu, CmdViewLayoutFirst, CmdViewLayoutLast, id, MF_BYCOMMAND);
     MenuSetChecked(win->menu, CmdToggleContinuousView, IsContinuous(displayMode));
-
-    if (win->CurrentTab() && win->CurrentTab()->GetEngineType() == kindEngineComicBooks) {
-        bool mangaMode = win->AsFixed()->GetDisplayR2L();
-        MenuSetChecked(win->menu, CmdToggleMangaMode, mangaMode);
-    }
+    MenuSetChecked(win->menu, CmdToggleMangaMode, win->AsFixed()->GetDisplayR2L());
 }
 
 static void MenuUpdateStateForWindow(MainWindow* win) {
