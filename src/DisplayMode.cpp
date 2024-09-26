@@ -11,17 +11,27 @@
 #include "utils/Log.h"
 
 bool IsSingle(DisplayMode mode) {
-    return DisplayMode::SinglePage == mode || DisplayMode::Continuous == mode;
+    return DisplayMode::SinglePage == mode || DisplayMode::ContinuousVertically == mode ||
+           DisplayMode::ContinuousHorizontally == mode;
 }
 
 bool IsContinuous(DisplayMode mode) {
     switch (mode) {
-        case DisplayMode::Continuous:
+        case DisplayMode::ContinuousVertically:
+        case DisplayMode::ContinuousHorizontally:
         case DisplayMode::ContinuousFacing:
         case DisplayMode::ContinuousBookView:
             return true;
     }
     return false;
+}
+
+bool IsContinuousVertically(DisplayMode mode) {
+    return IsContinuous(mode) && !IsContinuousHorizontally(mode);
+}
+
+bool IsContinuousHorizontally(DisplayMode mode) {
+    return mode == DisplayMode::ContinuousHorizontally;
 }
 
 bool IsFacing(DisplayMode mode) {
@@ -71,7 +81,7 @@ const char* DisplayModeToString(DisplayMode mode) {
 DisplayMode DisplayModeFromString(const char* s, DisplayMode defVal) {
     // for consistency ("continuous" is used instead in the settings instead for brevity)
     if (str::EqIS(s, "continuous single page")) {
-        return DisplayMode::Continuous;
+        return DisplayMode::ContinuousVertically;
     }
     int idx = seqstrings::StrToIdxIS(displayModeNames, s);
     if (idx < 0) {

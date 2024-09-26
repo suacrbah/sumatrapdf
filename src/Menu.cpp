@@ -86,7 +86,7 @@ bool gShowDebugMenu = false;
 
 // note: IDM_VIEW_SINGLE_PAGE - IDM_VIEW_CONTINUOUS and also
 //       CmdZoomFIT_PAGE - CmdZoomCUSTOM must be in a continuous range!
-static_assert(CmdViewLayoutLast - CmdViewLayoutFirst == 4, "view layout ids are not in a continuous range");
+static_assert(CmdViewLayoutLast - CmdViewLayoutFirst == 6, "view layout ids are not in a continuous range");
 static_assert(CmdZoomLast - CmdZoomFirst == 17, "zoom ids are not in a continuous range");
 
 // clang-format off
@@ -227,8 +227,16 @@ static MenuDef menuDefView[] = {
         CmdBookView,
     },
     {
-        _TRN("Show &Pages Continuously"),
-        CmdToggleContinuousView,
+        _TRN("Show &Pages Continuously Vertically"),
+        CmdToggleContinuousViewVertically,
+    },
+    {
+        _TRN("Show &Pages Continuously Horizontally"),
+        CmdToggleContinuousViewHorizontally,
+    },
+    {
+        _TRN("Reverse &Pages"),
+        CmdToggleReversePages,
     },
     // TODO: "&Inverse Reading Direction" (since some Mangas might be read left-to-right)?
     {
@@ -978,7 +986,9 @@ UINT_PTR removeIfChm[] = {
     CmdSinglePageView,
     CmdFacingView,
     CmdBookView,
-    CmdToggleContinuousView,
+    CmdToggleContinuousViewVertically,
+    CmdToggleContinuousViewHorizontally,
+    CmdToggleReversePages,
     CmdRotateLeft,
     CmdRotateRight,
     CmdTogglePresentationMode,
@@ -1494,7 +1504,9 @@ void MenuUpdateDisplayMode(MainWindow* win) {
     }
 
     CheckMenuRadioItem(win->menu, CmdViewLayoutFirst, CmdViewLayoutLast, id, MF_BYCOMMAND);
-    MenuSetChecked(win->menu, CmdToggleContinuousView, IsContinuous(displayMode));
+    MenuSetChecked(win->menu, CmdToggleContinuousViewVertically, IsContinuousVertically(displayMode));
+    MenuSetChecked(win->menu, CmdToggleContinuousViewHorizontally, IsContinuousHorizontally(displayMode));
+    MenuSetChecked(win->menu, CmdToggleReversePages, win->ctrl->IsReversed());
 
     if (win->CurrentTab() && win->CurrentTab()->GetEngineType() == kindEngineComicBooks) {
         bool mangaMode = win->AsFixed()->GetDisplayR2L();
